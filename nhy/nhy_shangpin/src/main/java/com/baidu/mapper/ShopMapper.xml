@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baidu.mapper.IShopMapper">
+	<select id="findShopsCount" parameterType="com.baidu.dto.Shop" resultType="int">
+		SELECT count(*) from d_goods t1 
+		LEFT JOIN t_categcry t2 on t1.cid=t2.cid
+		<where>
+			<if test="keywords!=null and keywords!=''">
+				and (t1.gname like concat('%',#{keywords},'%')
+					or
+					t1.shopdesc like concat('%',#{keywords},'%')						
+				    ) 
+			</if>
+			<if test="bdate!=null and bdate!=''">
+				and t1.createDate &gt;= #{bdate}
+			</if>
+			<if test="edate!=null and edate!=''">
+				and t1.createDate &lt;= #{edate}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findShops" parameterType="com.baidu.dto.Shop" resultType="com.baidu.dto.Shop">
+		SELECT t1.*,t2.cname from d_goods t1 
+		LEFT JOIN t_categcry t2 on t1.cid=t2.cid
+		<where>
+			<if test="keywords!=null and keywords!=''">
+				and (t1.gname like concat('%',#{keywords},'%')
+					or
+					t1.shopdesc like concat('%',#{keywords},'%')						
+				    ) 
+			</if>
+			<if test="bdate!=null and bdate!=''">
+				and t1.createDate &gt;= #{bdate}
+			</if>
+			<if test="edate!=null and edate!=''">
+				and t1.createDate &lt;= #{edate}
+			</if>
+		</where>
+		
+		limit #{page},#{rows}
+	</select>
+	
+	<select id="findAllShops" resultType="com.baidu.dto.Shop">
+		SELECT t1.*,t2.cname from d_goods t1 
+		LEFT JOIN t_categcry t2 on t1.cid=t2.cid
+	</select>
+	
+	<select id="findAllShopCategory" resultType="com.baidu.dto.Shop">
+		SELECT c.cid,c.cname from t_categcry c
+	</select>
+	
+	<insert id="addShop">
+		insert into d_goods(gname,cid,price,count,shopdesc,url)
+		values(#{gname},#{cid},#{price},#{count},#{shopdesc},#{url}) 
+	</insert>
+	<delete id="deleteByIds">
+		delete from d_goods where gid in (${value})
+	</delete>
+	
+
+</mapper>
